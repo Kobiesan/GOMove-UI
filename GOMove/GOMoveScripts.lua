@@ -185,19 +185,19 @@ end)
 -- ============================================================================
 -- MAIN FRAME - Reorganized with cleaner layout
 -- ============================================================================
-local MainFrame = GOMove:CreateFrame("GOMove_UI", 180, 615)
+local MainFrame = GOMove:CreateFrame("GOMove_UI", 180, 600)
 GOMove.MainFrame = MainFrame
 MainFrame:Position("LEFT", UIParent, "LEFT", 0, 50)
 
-local yPos = -28
+local yPos = -30
 
 -- ============================================================================
 -- SECTION: Position (Horizontal Movement)
 -- ============================================================================
 CreateSectionHeader(MainFrame, "— Position —", yPos)
-yPos = yPos - 10
+yPos = yPos
 
-local MOVEAMT = GOMove:CreateInput(MainFrame, "MOVEAMT", 45, 20, 0, yPos, 4, 50)
+local MOVEAMT = GOMove:CreateInput(MainFrame, "MOVEAMT", 45, 20, 0, yPos - 48, 4, 50)
 yPos = yPos - 5
 
 -- Compass layout
@@ -257,18 +257,7 @@ yPos = yPos - 8
 -- SECTION: Rotation
 -- ============================================================================
 CreateSectionHeader(MainFrame, "— Rotation —", yPos)
-yPos = yPos - 10
-
-local ROTAMT = GOMove:CreateInput(MainFrame, "ROTAMT", 45, 20, 0, yPos, 4, 30)
-yPos = yPos - 5
-
-local ROTLEFT = GOMove:CreateButton(MainFrame, "Turn Left", 60, 20, -35, yPos - 20)
-function ROTLEFT:OnClick() GOMove:Move("LEFT", ROTAMT:GetNumber()) end
-
-local ROTRIGHT = GOMove:CreateButton(MainFrame, "Turn Right", 60, 20, 35, yPos - 20)
-function ROTRIGHT:OnClick() GOMove:Move("RIGHT", ROTAMT:GetNumber()) end
-
-yPos = yPos - 55
+yPos = yPos - 15
 
 -- Pitch/Roll sliders
 local PITCHSLIDER = GOMove:CreateSlider(MainFrame, "Pitch", 150, 0, yPos, -180, 180, 0)
@@ -282,6 +271,14 @@ local ROLLSLIDER = GOMove:CreateSlider(MainFrame, "Roll", 150, 0, yPos, -180, 18
 function ROLLSLIDER:OnValueChanged(value)
     local radians = math.floor(value * math.pi / 180 * 100 + 0.5)
     GOMove:Move("SETROLL", radians + 18000)
+end
+yPos = yPos - 40
+
+-- Turn/Orientation slider
+local TURNSLIDER = GOMove:CreateSlider(MainFrame, "Turn", 150, 0, yPos, -180, 180, 0)
+function TURNSLIDER:OnValueChanged(value)
+    local radians = math.floor(value * math.pi / 180 * 100 + 0.5)
+    GOMove:Move("SETTURN", radians + 18000)
 end
 yPos = yPos - 40
 CreateSeparator(MainFrame, yPos)
@@ -321,7 +318,7 @@ function RESPAWN:OnClick() GOMove:Move("RESPAWN") end
 local INFO = GOMove:CreateButton(MainFrame, "Info", 70, 22, 40, yPos)
 function INFO:OnClick() GOMove:Move("INFO") end
 
-yPos = yPos - 30
+yPos = yPos - 35
 CreateSeparator(MainFrame, yPos)
 yPos = yPos - 8
 
@@ -408,6 +405,7 @@ end
 function GOMove.SCMD.resetsliders()
     PITCHSLIDER:SetValue(0)
     ROLLSLIDER:SetValue(0)
+    TURNSLIDER:SetValue(0)
     print("|cFF00FF00[GOMove]|r Sliders reset to 0")
 end
 
