@@ -1,4 +1,4 @@
-GOMove.FavL = {NameWidth = 17}
+﻿GOMove.FavL = {NameWidth = 17}
 function GOMove.FavL:Add(name, guid)
     self:Del(guid)
     table.insert(self, 1, {name, guid})
@@ -33,6 +33,24 @@ function GOMove.Selected:Add(name, guid)
 end
 function GOMove.Selected:Del(guid)
     self[guid] = nil
+end
+
+-- Helper function to create section headers
+local function CreateSectionHeader(parent, text, yOffset)
+    local header = parent:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+    header:SetPoint("TOP", parent, "TOP", 0, yOffset)
+    header:SetText("|cFFFFD100"..text.."|r")
+    header:SetJustifyH("CENTER")
+    return header
+end
+
+-- Helper function to create separator lines
+local function CreateSeparator(parent, yOffset)
+    local sep = parent:CreateTexture(nil, "ARTWORK")
+    sep:SetSize(150, 1)
+    sep:SetPoint("TOP", parent, "TOP", 0, yOffset)
+    sep:SetTexture(0.4, 0.4, 0.4, 0.8)  -- Use SetTexture instead for 3.3.5a
+    return sep
 end
 
 -- FAVOURITE LIST
@@ -74,6 +92,7 @@ function SelFrame:UpdateScript(ID)
         end
     end
 end
+
 local ClearButton = CreateFrame("Button", SelFrame:GetName().."_ToggleSelect", SelFrame)
 ClearButton:SetSize(16, 16)
 ClearButton:SetNormalTexture("Interface\\Buttons\\UI-GuildButton-PublicNote-Disabled")
@@ -100,6 +119,7 @@ ClearButton:SetScript("OnClick", function()
     end
     SelFrame:Update()
 end)
+
 for i = 1, SelFrame.ButtonCount do
     local Button = SelFrame.Buttons[i]
     local MiscButton = Button.MiscButton
@@ -142,6 +162,7 @@ for i = 1, SelFrame.ButtonCount do
         GOMove:Move("INFO", SelFrame.DataTable[FauxScrollFrame_GetOffset(SelFrame.ScrollBar) + i][2])
     end)
 end
+
 local EmptyButton = CreateFrame("Button", SelFrame:GetName().."_EmptyButton", SelFrame)
 EmptyButton:SetSize(30, 30)
 EmptyButton:SetNormalTexture("Interface\\Buttons\\CancelButton-Up")
@@ -161,186 +182,204 @@ EmptyButton:SetScript("OnClick", function()
     SelFrame:Update()
 end)
 
--- MAIN FRAME
-local MainFrame = GOMove:CreateFrame("GOMove_UI", 170, 620)
+-- ============================================================================
+-- MAIN FRAME - Reorganized with cleaner layout
+-- ============================================================================
+local MainFrame = GOMove:CreateFrame("GOMove_UI", 180, 615)
 GOMove.MainFrame = MainFrame
-MainFrame:Position("LEFT", UIParent, "LEFT", 0, 85)
+MainFrame:Position("LEFT", UIParent, "LEFT", 0, 50)
 
-local NEWS = GOMove:CreateInput(MainFrame, "NEWS", 40, 25, 0, -50, 4, 30)
+local yPos = -28
 
-local NORTH = GOMove:CreateButton(MainFrame, "N", 50, 25, 0, -25)
-function NORTH:OnClick()
-    GOMove:Move("NORTH", NEWS:GetNumber())
-end
-local EAST = GOMove:CreateButton(MainFrame, "E", 50, 25, 50, -50)
-function EAST:OnClick()
-    GOMove:Move("EAST", NEWS:GetNumber())
-end
-local SOUTH = GOMove:CreateButton(MainFrame, "S", 50, 25, 0, -75)
-function SOUTH:OnClick()
-    GOMove:Move("SOUTH", NEWS:GetNumber())
-end
-local WEST = GOMove:CreateButton(MainFrame, "W", 50, 25, -50, -50)
-function WEST:OnClick()
-    GOMove:Move("WEST", NEWS:GetNumber())
-end
+-- ============================================================================
+-- SECTION: Position (Horizontal Movement)
+-- ============================================================================
+CreateSectionHeader(MainFrame, "— Position —", yPos)
+yPos = yPos - 10
 
-local NORTHEAST = GOMove:CreateButton(MainFrame, "NE", 40, 20, 45, -30)
-function NORTHEAST:OnClick()
-    GOMove:Move("NORTHEAST", NEWS:GetNumber())
-end
-local NORTHWEST = GOMove:CreateButton(MainFrame, "NW", 40, 20, -45, -30)
-function NORTHWEST:OnClick()
-    GOMove:Move("NORTHWEST", NEWS:GetNumber())
-end
-local SOUTHEAST = GOMove:CreateButton(MainFrame, "SE", 40, 20, 45, -75)
-function SOUTHEAST:OnClick()
-    GOMove:Move("SOUTHEAST", NEWS:GetNumber())
-end
-local SOUTHWEST = GOMove:CreateButton(MainFrame, "SW", 40, 20, -45, -75)
-function SOUTHWEST:OnClick()
-    GOMove:Move("SOUTHWEST", NEWS:GetNumber())
-end
+local MOVEAMT = GOMove:CreateInput(MainFrame, "MOVEAMT", 45, 20, 0, yPos, 4, 50)
+yPos = yPos - 5
 
-local X = GOMove:CreateButton(MainFrame, "X", 35, 20, -60, -105)
-function X:OnClick()
-    GOMove:Move("X")
-end
-local Y = GOMove:CreateButton(MainFrame, "Y", 35, 20, -20, -105)
-function Y:OnClick()
-    GOMove:Move("Y")
-end
-local Z = GOMove:CreateButton(MainFrame, "Z", 35, 20, 20, -105)
-function Z:OnClick()
-    GOMove:Move("Z")
-end
-local O = GOMove:CreateButton(MainFrame, "O", 35, 20, 60, -105)
-function O:OnClick()
-    GOMove:Move("O")
-end
+-- Compass layout
+local NORTH = GOMove:CreateButton(MainFrame, "N", 36, 22, 0, yPos - 20)
+function NORTH:OnClick() GOMove:Move("NORTH", MOVEAMT:GetNumber()) end
 
-local ROTHEI = GOMove:CreateInput(MainFrame, "ROTHEI", 40, 25, 0, -155, 4, 30)
-local UP = GOMove:CreateButton(MainFrame, "Up", 40, 25, 0, -130)
-function UP:OnClick()
-    GOMove:Move("UP", ROTHEI:GetNumber())
-end
-local DOWN = GOMove:CreateButton(MainFrame, "Down", 40, 25, 0, -180)
-function DOWN:OnClick()
-    GOMove:Move("DOWN", ROTHEI:GetNumber())
-end
-local RIGHT = GOMove:CreateButton(MainFrame, "Right", 40, 25, 45, -155)
-function RIGHT:OnClick()
-    GOMove:Move("RIGHT", ROTHEI:GetNumber())
-end
-local LEFT = GOMove:CreateButton(MainFrame, "Left", 40, 25, -45, -155)
-function LEFT:OnClick()
-    GOMove:Move("LEFT", ROTHEI:GetNumber())
-end
+local SOUTH = GOMove:CreateButton(MainFrame, "S", 36, 22, 0, yPos - 64)
+function SOUTH:OnClick() GOMove:Move("SOUTH", MOVEAMT:GetNumber()) end
 
--- Pitch and Roll sliders
-local PITCHSLIDER = GOMove:CreateSlider(MainFrame, "Pitch", 140, 0, -210, -180, 180, 0)
+local EAST = GOMove:CreateButton(MainFrame, "E", 36, 22, 40, yPos - 42)
+function EAST:OnClick() GOMove:Move("EAST", MOVEAMT:GetNumber()) end
+
+local WEST = GOMove:CreateButton(MainFrame, "W", 36, 22, -40, yPos - 42)
+function WEST:OnClick() GOMove:Move("WEST", MOVEAMT:GetNumber()) end
+
+local NORTHEAST = GOMove:CreateButton(MainFrame, "NE", 32, 18, 35, yPos - 23)
+function NORTHEAST:OnClick() GOMove:Move("NORTHEAST", MOVEAMT:GetNumber()) end
+
+local NORTHWEST = GOMove:CreateButton(MainFrame, "NW", 32, 18, -35, yPos - 23)
+function NORTHWEST:OnClick() GOMove:Move("NORTHWEST", MOVEAMT:GetNumber()) end
+
+local SOUTHEAST = GOMove:CreateButton(MainFrame, "SE", 32, 18, 35, yPos - 61)
+function SOUTHEAST:OnClick() GOMove:Move("SOUTHEAST", MOVEAMT:GetNumber()) end
+
+local SOUTHWEST = GOMove:CreateButton(MainFrame, "SW", 32, 18, -35, yPos - 61)
+function SOUTHWEST:OnClick() GOMove:Move("SOUTHWEST", MOVEAMT:GetNumber()) end
+
+yPos = yPos - 90
+
+-- Vertical movement (Up/Down)
+local UP = GOMove:CreateButton(MainFrame, "Up", 60, 20, -35, yPos)
+function UP:OnClick() GOMove:Move("UP", MOVEAMT:GetNumber()) end
+
+local DOWN = GOMove:CreateButton(MainFrame, "Down", 60, 20, 35, yPos)
+function DOWN:OnClick() GOMove:Move("DOWN", MOVEAMT:GetNumber()) end
+
+yPos = yPos - 25
+
+-- Snap to position buttons
+local X = GOMove:CreateButton(MainFrame, "X", 32, 20, -55, yPos)
+function X:OnClick() GOMove:Move("X") end
+
+local Y = GOMove:CreateButton(MainFrame, "Y", 32, 20, -18, yPos)
+function Y:OnClick() GOMove:Move("Y") end
+
+local Z = GOMove:CreateButton(MainFrame, "Z", 32, 20, 18, yPos)
+function Z:OnClick() GOMove:Move("Z") end
+
+local O = GOMove:CreateButton(MainFrame, "O", 32, 20, 55, yPos)
+function O:OnClick() GOMove:Move("O") end
+
+yPos = yPos - 33
+CreateSeparator(MainFrame, yPos)
+yPos = yPos - 8
+
+-- ============================================================================
+-- SECTION: Rotation
+-- ============================================================================
+CreateSectionHeader(MainFrame, "— Rotation —", yPos)
+yPos = yPos - 10
+
+local ROTAMT = GOMove:CreateInput(MainFrame, "ROTAMT", 45, 20, 0, yPos, 4, 30)
+yPos = yPos - 5
+
+local ROTLEFT = GOMove:CreateButton(MainFrame, "Turn Left", 60, 20, -35, yPos - 20)
+function ROTLEFT:OnClick() GOMove:Move("LEFT", ROTAMT:GetNumber()) end
+
+local ROTRIGHT = GOMove:CreateButton(MainFrame, "Turn Right", 60, 20, 35, yPos - 20)
+function ROTRIGHT:OnClick() GOMove:Move("RIGHT", ROTAMT:GetNumber()) end
+
+yPos = yPos - 55
+
+-- Pitch/Roll sliders
+local PITCHSLIDER = GOMove:CreateSlider(MainFrame, "Pitch", 150, 0, yPos, -180, 180, 0)
 function PITCHSLIDER:OnValueChanged(value)
-    -- Convert degrees to radians * 100, then add 18000 offset to avoid negative values
-    -- Server will subtract 18000 to get actual value
     local radians = math.floor(value * math.pi / 180 * 100 + 0.5)
     GOMove:Move("SETPITCH", radians + 18000)
 end
+yPos = yPos - 40
 
-local ROLLSLIDER = GOMove:CreateSlider(MainFrame, "Roll", 140, 0, -255, -180, 180, 0)
+local ROLLSLIDER = GOMove:CreateSlider(MainFrame, "Roll", 150, 0, yPos, -180, 180, 0)
 function ROLLSLIDER:OnValueChanged(value)
     local radians = math.floor(value * math.pi / 180 * 100 + 0.5)
     GOMove:Move("SETROLL", radians + 18000)
 end
+yPos = yPos - 40
+CreateSeparator(MainFrame, yPos)
+yPos = yPos - 8
 
--- Buttons below pitch/roll (shifted down by 75)
-local DELETE = GOMove:CreateButton(MainFrame, "Delete", 50, 25, -55, -290)
-function DELETE:OnClick()
-    GOMove:Move("DELETE")
-end
-local FACE = GOMove:CreateButton(MainFrame, "Snap", 50, 25, 0, -290)
-function FACE:OnClick()
-    GOMove:Move("FACE")
-end
-local SELECTNEAR = GOMove:CreateButton(MainFrame, "Target", 50, 25, 55, -290)
-function SELECTNEAR:OnClick()
-    GOMove:Move("SELECTNEAR")
-end
+-- ============================================================================
+-- SECTION: Tools
+-- ============================================================================
+CreateSectionHeader(MainFrame, "— Tools —", yPos)
+yPos = yPos - 10
 
-local RESPAWN = GOMove:CreateButton(MainFrame, "Respawn", 65, 25, -35, -317.5)
-function RESPAWN:OnClick()
-    GOMove:Move("RESPAWN")
-end
-local FLOOR = GOMove:CreateButton(MainFrame, "Floor", 65, 25, 35, -317.5)
-function FLOOR:OnClick()
-    GOMove:Move("FLOOR")
-end
+local SELECTNEAR = GOMove:CreateButton(MainFrame, "Select", 50, 22, -55, yPos)
+function SELECTNEAR:OnClick() GOMove:Move("SELECTNEAR") end
 
-local GROUND = GOMove:CreateButton(MainFrame, "Ground", 70, 25, -40, -345)
-function GROUND:OnClick()
-    GOMove:Move("GROUND")
-end
-local GOTO = GOMove:CreateButton(MainFrame, "Go to", 70, 25, 40, -345)
-function GOTO:OnClick()
-    GOMove:Move("GOTO")
-end
+local FACE = GOMove:CreateButton(MainFrame, "Snap", 50, 22, 0, yPos)
+function FACE:OnClick() GOMove:Move("FACE") end
 
-local ENTRY = GOMove:CreateInput(MainFrame, "ENTRY", 65, 25, -30, -375, 10)
-local SPAWN = GOMove:CreateButton(MainFrame, "Spawn", 50, 25, 40, -375)
-function SPAWN:OnClick()
-    GOMove:Move("SPAWN", ENTRY:GetNumber())
-end
+local DELETE = GOMove:CreateButton(MainFrame, "Delete", 50, 22, 55, yPos)
+function DELETE:OnClick() GOMove:Move("DELETE") end
 
-local RADIUS = GOMove:CreateInput(MainFrame, "RADIUS", 40, 25, -55, -405, 4)
-local SELECTALLNEAR = GOMove:CreateButton(MainFrame, "Select by radius", 110, 25, 25, -405)
-function SELECTALLNEAR:OnClick()
-    GOMove:Move("SELECTALLNEAR", RADIUS:GetNumber())
-end
+yPos = yPos - 26
 
-local MASK = GOMove:CreateInput(MainFrame, "MASK", 65, 25, -30, -435, 10)
-local PHASE = GOMove:CreateButton(MainFrame, "Phase", 50, 25, 40, -435)
-function PHASE:OnClick()
-    GOMove:Move("PHASE", MASK:GetNumber())
-end
+local GROUND = GOMove:CreateButton(MainFrame, "Ground", 52, 22, -55, yPos)
+function GROUND:OnClick() GOMove:Move("GROUND") end
 
-local INFO = GOMove:CreateButton(MainFrame, "Info", 150, 25, 0, -465)
-function INFO:OnClick()
-    GOMove:Move("INFO")
-end
+local FLOOR = GOMove:CreateButton(MainFrame, "Floor", 52, 22, 0, yPos)
+function FLOOR:OnClick() GOMove:Move("FLOOR") end
 
-local FAVOURITES = GOMove:CreateButton(MainFrame, "Favourites", 80, 25, -40, -495)
+local GOTO = GOMove:CreateButton(MainFrame, "Go To", 52, 22, 55, yPos)
+function GOTO:OnClick() GOMove:Move("GOTO") end
+
+yPos = yPos - 26
+
+local RESPAWN = GOMove:CreateButton(MainFrame, "Respawn", 70, 22, -40, yPos)
+function RESPAWN:OnClick() GOMove:Move("RESPAWN") end
+
+local INFO = GOMove:CreateButton(MainFrame, "Info", 70, 22, 40, yPos)
+function INFO:OnClick() GOMove:Move("INFO") end
+
+yPos = yPos - 30
+CreateSeparator(MainFrame, yPos)
+yPos = yPos - 8
+
+-- ============================================================================
+-- SECTION: Spawn
+-- ============================================================================
+CreateSectionHeader(MainFrame, "— Spawn —", yPos)
+yPos = yPos - 10
+
+local ENTRY = GOMove:CreateInput(MainFrame, "ENTRY", 70, 22, -25, yPos, 10)
+local SPAWN = GOMove:CreateButton(MainFrame, "Spawn", 55, 22, 50, yPos)
+function SPAWN:OnClick() GOMove:Move("SPAWN", ENTRY:GetNumber()) end
+
+yPos = yPos - 28
+
+local RADIUS = GOMove:CreateInput(MainFrame, "RADIUS", 45, 22, -50, yPos, 4)
+local SELECTALLNEAR = GOMove:CreateButton(MainFrame, "Select Radius", 90, 22, 35, yPos)
+function SELECTALLNEAR:OnClick() GOMove:Move("SELECTALLNEAR", RADIUS:GetNumber()) end
+
+yPos = yPos - 28
+
+local MASK = GOMove:CreateInput(MainFrame, "MASK", 70, 22, -25, yPos, 10)
+local PHASE = GOMove:CreateButton(MainFrame, "Phase", 55, 22, 50, yPos)
+function PHASE:OnClick() GOMove:Move("PHASE", MASK:GetNumber()) end
+
+yPos = yPos - 32
+
+-- ============================================================================
+-- SECTION: Lists
+-- ============================================================================
+local FAVOURITES = GOMove:CreateButton(MainFrame, "Favourites", 75, 24, -40, yPos)
 function FAVOURITES:OnClick()
-    if(FavFrame:IsVisible()) then
-        FavFrame:Hide()
-    else
-        FavFrame:Show()
-    end
+    if(FavFrame:IsVisible()) then FavFrame:Hide() else FavFrame:Show() end
 end
-local SELECTIONS = GOMove:CreateButton(MainFrame, "Selections", 80, 25, 40, -495)
+
+local SELECTIONS = GOMove:CreateButton(MainFrame, "Selections", 75, 24, 40, yPos)
 function SELECTIONS:OnClick()
-    if(SelFrame:IsVisible()) then
-        SelFrame:Hide()
-    else
-        SelFrame:Show()
-    end
+    if(SelFrame:IsVisible()) then SelFrame:Hide() else SelFrame:Show() end
 end
 
-local SPELLENTRY = GOMove:CreateInput(MainFrame, "SPELLENTRY", 65, 25, -30, -525, 10)
-local SPELLSPAWN = GOMove:CreateButton(MainFrame, "Send", 50, 25, 40, -525)
-function SPELLSPAWN:OnClick()
-    GOMove:Move("SPAWNSPELL", SPELLENTRY:GetNumber())
-end
-
+-- ============================================================================
+-- Slash Commands
+-- ============================================================================
 GOMove.SCMD = {}
 function GOMove.SCMD.help()
+    print("|cFF00FF00[GOMove] Commands:|r")
     for k, v in pairs(GOMove.SCMD) do
-        print(k)
+        if type(v) == "function" then
+            print("  /gomove " .. k)
+        end
     end
 end
+
 function GOMove.SCMD.reset()
     for k, inputfield in ipairs(GOMove.Inputs) do
         inputfield:ClearFocus()
     end
-    print("Frames reset")
+    print("|cFF00FF00[GOMove]|r Frames reset")
     for k, Frame in pairs(GOMove.Frames) do
         if(Frame.Default) then
             Frame:ClearAllPoints()
@@ -349,6 +388,7 @@ function GOMove.SCMD.reset()
         Frame:Show()
     end
 end
+
 function GOMove.SCMD.invertselection()
     local sel = {}
     for GUID, NAME in pairs(GOMove.Selected) do
@@ -363,6 +403,12 @@ function GOMove.SCMD.invertselection()
         GOMove.Selected:Del(v)
     end
     SelFrame:Update()
+end
+
+function GOMove.SCMD.resetsliders()
+    PITCHSLIDER:SetValue(0)
+    ROLLSLIDER:SetValue(0)
+    print("|cFF00FF00[GOMove]|r Sliders reset to 0")
 end
 
 SLASH_GOMOVE1 = '/gomove'
@@ -383,6 +429,9 @@ function SlashCmdList.GOMOVE(msg, editBox)
     end
 end
 
+-- ============================================================================
+-- Event Handler
+-- ============================================================================
 local EventFrame = CreateFrame("Frame")
 EventFrame:RegisterEvent("ADDON_LOADED")
 EventFrame:RegisterEvent("CHAT_MSG_ADDON")
@@ -433,8 +482,8 @@ EventFrame:SetScript("OnEvent",
                     local name = ARG2
                     local entry = ARG3
                     print("|cFF00FF00[GOMove]|r Object Info:")
-                    print(string.format("  GUID: %s | Entry: %s", guid, entry))
-                    print(string.format("  Name: %s", name))
+                    print(string.format("  |cFFFFFFFFGUID:|r %s  |cFFFFFFFFEntry:|r %s", guid, entry))
+                    print(string.format("  |cFFFFFFFFName:|r %s", name))
                 end
             end
         elseif(MSG == "GOMove" and event == "ADDON_LOADED") then
@@ -447,6 +496,7 @@ EventFrame:SetScript("OnEvent",
                 end
             end
             GOMove:Update()
+            print("|cFF00FF00[GOMove]|r Loaded. Type |cFFFFD100/gomove|r to toggle UI.")
         end
     end
 )
