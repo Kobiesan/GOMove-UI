@@ -72,6 +72,7 @@ public:
         ROLLLEFT,
         SETPITCH,
         SETROLL,
+        SETTURN,
     };
 
     ChatCommandTable GetCommands() const override
@@ -223,7 +224,7 @@ public:
                     }
                 }
             }
-            else if (ID >= PITCHUP && ID <= SETROLL) // Pitch/roll commands
+            else if (ID >= PITCHUP && ID <= SETTURN) // Pitch/roll/turn commands
             {
                 GameObject* target = GOMove::GetGameObject(player, lowguid);
                 if (!target)
@@ -242,6 +243,7 @@ public:
                     case ROLLLEFT: GOMove::RotateGameObject(player, currentO, currentPitch, currentRoll - ((float)ARG / 100), lowguid);  break;
                     case SETPITCH: GOMove::RotateGameObject(player, currentO, ((float)ARG - 18000.0f) / 100.0f, currentRoll, lowguid); break;
                     case SETROLL: GOMove::RotateGameObject(player, currentO, currentPitch, ((float)ARG - 18000.0f) / 100.0f, lowguid); break;
+                    case SETTURN: GOMove::RotateGameObject(player, ((float)ARG - 18000.0f) / 100.0f, currentPitch, currentRoll, lowguid); break;
                     }
                 }
             }
