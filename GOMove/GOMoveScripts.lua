@@ -286,6 +286,14 @@ function TURNSLIDER:OnValueChanged(value)
     GOMove:Move("SETTURN", radians + 18000)
 end
 yPos = yPos - 40
+
+-- Helper function to reset all rotation sliders without triggering callbacks
+function GOMove:ResetRotationSliders()
+    if self.PITCHSLIDER then self.PITCHSLIDER:SetValueSilent(0) end
+    if self.ROLLSLIDER then self.ROLLSLIDER:SetValueSilent(0) end
+    if self.TURNSLIDER then self.TURNSLIDER:SetValueSilent(0) end
+end
+
 CreateSeparator(MainFrame, yPos)
 yPos = yPos - 8
 
@@ -484,21 +492,7 @@ EventFrame:SetScript("OnEvent",
                         GOMove.SelL:Add(ARG2, guid, ARG3)
                     end
                     -- Reset sliders to 0 when selecting a gameobject
-                    if GOMove.PITCHSLIDER then
-                        GOMove.PITCHSLIDER.isDragging = true
-                        GOMove.PITCHSLIDER:SetValue(0)
-                        GOMove.PITCHSLIDER.isDragging = false
-                    end
-                    if GOMove.ROLLSLIDER then
-                        GOMove.ROLLSLIDER.isDragging = true
-                        GOMove.ROLLSLIDER:SetValue(0)
-                        GOMove.ROLLSLIDER.isDragging = false
-                    end
-                    if GOMove.TURNSLIDER then
-                        GOMove.TURNSLIDER.isDragging = true
-                        GOMove.TURNSLIDER:SetValue(0)
-                        GOMove.TURNSLIDER.isDragging = false
-                    end
+                    GOMove:ResetRotationSliders()
                     GOMove:Update()
                 elseif(ID == "SWAP") then
                     local oldGUID, newGUID = ENTRYORGUID, ARG3
